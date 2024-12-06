@@ -68,7 +68,7 @@ export default function Home() {
 
   return (
     <section>
-      <div className='mb-6 flex gap-4 justify-between'>
+      <div className='mb-6 flex gap-4 justify-between flex-wrap'>
         <select
           onChange={(e) => handleFilterChange('category', e.target.value)}
           value={filters.category}
