@@ -49,27 +49,27 @@ type Category =
 
 export interface Product {
   id: number;
-  title: string;
-  description: string;
+  availabilityStatus: string;
+  brand?: string;
   category: Category;
-  price: number;
+  description: string;
+  dimensions: Dimensions;
   discountPercentage: number;
+  images: string[];
+  meta: Meta;
+  minimumOrderQuantity: number;
+  price: number;
   rating: number;
+  returnPolicy: string;
+  reviews: Review[];
+  shippingInformation: string;
+  sku: string;
   stock: number;
   tags: string[];
-  brand: string;
-  sku: string;
-  weight: number;
-  dimensions: Dimensions;
-  warrantyInformation: string;
-  shippingInformation: string;
-  availabilityStatus: string;
-  reviews: Review[];
-  returnPolicy: string;
-  minimumOrderQuantity: number;
-  meta: Meta;
   thumbnail: string;
-  images: string[];
+  title: string;
+  warrantyInformation: string;
+  weight: number;
 }
 
 // Define the type for the API response
