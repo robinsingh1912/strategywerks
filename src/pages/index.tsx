@@ -1,7 +1,14 @@
+import { Modal } from '@/components/Modal';
 import { ProductCard, ProductCardSkeleton } from '@/components/ProductCard';
-import { useElementOnScreen } from '@/hooks';
+import { useElementOnScreen, useProductModal } from '@/hooks';
 import { useProducts } from '@/hooks/useProducts';
-import React, { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
+
+const ProductModal = lazy(() =>
+  import('@/components/ProductModal').then((module) => ({
+    default: module.ProductModal,
+  }))
+);
 
 export default function Home() {
   const [filters, setFilters] = useState({
@@ -10,6 +17,7 @@ export default function Home() {
     rating: 0,
   });
   const [sortOption, setSortOption] = useState('');
+  const { isOpen, setProduct, product } = useProductModal();
 
   const {
     data,
@@ -57,9 +65,10 @@ export default function Home() {
   const handleFilterChange = (key: string, value: unknown) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
+
   return (
     <section>
-      <div className='filters gap-4'>
+      <div className='mb-6 flex gap-4 justify-between'>
         <select
           onChange={(e) => handleFilterChange('category', e.target.value)}
           value={filters.category}
@@ -69,28 +78,34 @@ export default function Home() {
           <option value='furniture'>Fashion</option>
         </select>
 
-        <input
-          type='range'
-          min='0'
-          max='1000'
-          value={filters.priceRange[1]}
-          onChange={(e) =>
-            handleFilterChange('priceRange', [0, Number(e.target.value)])
-          }
-        />
-        <span>
-          Price: {filters.priceRange[0]} - {filters.priceRange[1]}
-        </span>
+        <div className='grid'>
+          <input
+            type='range'
+            min='0'
+            max='1000'
+            value={filters.priceRange[1]}
+            onChange={(e) =>
+              handleFilterChange('priceRange', [0, Number(e.target.value)])
+            }
+          />
+          <span>
+            Price: {filters.priceRange[0]} - {filters.priceRange[1]}
+          </span>
+        </div>
 
-        <input
-          type='number'
-          min='0'
-          max='5'
-          step='0.1'
-          value={filters.rating}
-          onChange={(e) => handleFilterChange('rating', Number(e.target.value))}
-        />
-        <span>Rating: {filters.rating}+</span>
+        <div className='grid'>
+          <input
+            type='number'
+            min='0'
+            max='5'
+            step='1'
+            value={filters.rating}
+            onChange={(e) =>
+              handleFilterChange('rating', Number(e.target.value))
+            }
+          />
+          <span>Rating: {filters.rating}+</span>
+        </div>
 
         <select
           onChange={(e) => setSortOption(e.target.value)}
@@ -105,7 +120,9 @@ export default function Home() {
       </div>
       <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6'>
         {sortedProducts.map((product) => (
-          <ProductCard product={product} key={product.id} />
+          <div key={product.id} onClick={() => setProduct(product)}>
+            <ProductCard product={product} />
+          </div>
         ))}
       </div>
       <div className='flex justify-center'>
@@ -126,6 +143,11 @@ export default function Home() {
             : 'No more products'}
         </button>
       </div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Modal isOpen={isOpen} onClose={() => setProduct(null)}>
+          <ProductModal product={product} />
+        </Modal>
+      </Suspense>
     </section>
   );
 }
