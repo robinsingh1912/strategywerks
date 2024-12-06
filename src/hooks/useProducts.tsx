@@ -1,15 +1,13 @@
 import { ProductResponse } from '@/types';
+import { http } from '@/utils/axios';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import axios from 'axios';
 
 interface Props {
   pageParam: number;
 }
 const getProducts = ({ pageParam }: Props) => {
-  return axios
-    .get<ProductResponse>(
-      `https://dummyjson.com/products?limit=10&skip=${pageParam * 10}`
-    )
+  return http
+    .get<ProductResponse>(`/products?limit=10&skip=${pageParam * 10}`)
     .then((res) => res.data);
 };
 
